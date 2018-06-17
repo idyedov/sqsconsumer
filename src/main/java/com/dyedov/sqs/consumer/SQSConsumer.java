@@ -14,28 +14,23 @@ import java.util.stream.Collectors;
 
 /**
  * SQS Consumer Runnable meant to be executed from a single thread.
+ * Continuously polls an SQS queue for messages and processes them using provided message processor.
  *
  * Example usage:
  *
- *     private static final int NUM_LISTENER_THREADS = 5;
- *
- *     public static void main(String[] args) {
- *         ExecutorService executorService = Executors.newFixedThreadPool(NUM_LISTENER_THREADS);
- *
- *         for (int i = 0; i < NUM_LISTENER_THREADS; ++i) {
- *             executorService.submit(SQSConsumer.builder()
- *                     .withMaxNumberOfMessages(10)
- *                     .withSqs(AmazonSQSClientBuilder.defaultClient())
- *                     .withMessageProcessor(m -> System.out.println("received message: " + m))
- *                     .withBackOff(new SQSMessageWaitTimeFunction(
- *                         new ExponentialBackoffStrategy(),
- *                         Duration.ofMinutes(1),
- *                         Duration.ofHours(1)
- *                     ))
- *                     .withQueueName("TestQueue")
- *                     .build());
- *         }
- *     }
+ *     Executors.newSingleThreadExecutor()
+ *         .submit(
+ *             SQSConsumer.builder()
+ *                 .withSqs(AmazonSQSClientBuilder.defaultClient())
+ *                 .withMessageProcessor(m -> System.out.println("received message: " + m))
+ *                 .withBackOff(new SQSMessageVisibilityTimeFunction(
+ *                     new ExponentialBackoffStrategy(),
+ *                     Duration.ofMinutes(1), // initial wait time
+ *                     Duration.ofHours(1) // maximum wait time for a message across all retries
+ *                 ))
+ *                 .withQueueURL(queueUrl)
+ *                 .build()
+ *     );
  */
 public class SQSConsumer implements Runnable {
     private final AmazonSQS sqs;

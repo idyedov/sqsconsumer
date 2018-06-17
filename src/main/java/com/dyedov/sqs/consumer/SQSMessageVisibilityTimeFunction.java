@@ -10,9 +10,9 @@ import java.util.Collections;
 import java.util.function.Function;
 
 /**
- * Function to compute wait time for messages that failed to process.
+ * Function to compute new visibility time for messages that failed to process.
  */
-public class SQSMessageWaitTimeFunction implements Function<Message, Integer> {
+public class SQSMessageVisibilityTimeFunction implements Function<Message, Integer> {
     private final BackoffStrategy backoffStrategy;
     private final Duration initialDelayBetweenRetries;
     private final Duration maximumWaitTime;
@@ -23,7 +23,7 @@ public class SQSMessageWaitTimeFunction implements Function<Message, Integer> {
      * @param initialDelayBetweenRetries the initial delay Duration to use for backoff.
      * @param maximumWaitTime the maximum Duration to wait from first message receive timestamp.
      */
-    public SQSMessageWaitTimeFunction(
+    public SQSMessageVisibilityTimeFunction(
             BackoffStrategy backoffStrategy, Duration initialDelayBetweenRetries, Duration maximumWaitTime
     ) {
         this.backoffStrategy = backoffStrategy;
@@ -32,9 +32,9 @@ public class SQSMessageWaitTimeFunction implements Function<Message, Integer> {
     }
 
     /**
-     * Generate an SQS message wait time for given SQS Message.
+     * Generate an SQS message visibility time for given SQS Message.
      * @param message the SQS message.
-     * @return Integer value for message wait time. Will never exceed MAX_VISIBILITY_TIMEOUT value.
+     * @return Integer value for message visibility time. Will never exceed MAX_VISIBILITY_TIMEOUT value.
      */
     @Override
     public Integer apply(Message message) {

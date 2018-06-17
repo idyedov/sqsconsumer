@@ -52,7 +52,7 @@ public class SQSConsumerTest {
         this.sqsConsumer = SQSConsumer.builder()
                 .withSqs(amazonSQS)
                 .withMessageProcessor(messageProcessor)
-                .withBackOff(new SQSMessageWaitTimeFunction(new ExponentialBackoffStrategy(), INITIAL_DELAY_BETWEEN_RETRIES, MAXIMUM_WAIT_TIME))
+                .withBackOff(new SQSMessageVisibilityTimeFunction(new ExponentialBackoffStrategy(), INITIAL_DELAY_BETWEEN_RETRIES, MAXIMUM_WAIT_TIME))
                 .withQueueURL(QUEUE_URL)
                 .build();
         sqsConsumer.shutdown(); // sets the shutdown flag so we will only do a single poll for messages
